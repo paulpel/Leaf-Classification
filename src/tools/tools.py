@@ -1,12 +1,11 @@
-import os, sys
-from matplotlib import cm
+import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import random
-import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout,\
+from tensorflow.keras.layers import Dense,\
      Activation, Flatten, Conv2D, MaxPooling2D
 
 
@@ -48,7 +47,7 @@ class prepareData:
                     try:
                         img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                         resized_array = cv2.resize(
-                            img_array, 
+                            img_array,
                             (self.img_size_x, self.img_size_y))
                         self.training_data.append([resized_array, class_num])
                     except Exception:
@@ -70,7 +69,7 @@ class prepareData:
         for features, label in self.training_data:
             self.train_X.append(features)
             self.train_y.append(label)
-        
+
         self.train_X = np.array(
             self.train_X).reshape(-1, self.img_size_x, self.img_size_y, 1)
         self.train_y = np.array(self.train_y)
@@ -83,13 +82,13 @@ class prepareData:
         self.logger.info("Creating the model...")
         model = Sequential()
 
-        model.add(Conv2D(64, (3,3), input_shape=self.train_X.shape[1:]))
+        model.add(Conv2D(64, (3, 3), input_shape=self.train_X.shape[1:]))
         model.add(Activation("relu"))
-        model.add(MaxPooling2D(pool_size=(2,2)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Conv2D(64, (3,3)))
+        model.add(Conv2D(64, (3, 3)))
         model.add(Activation("relu"))
-        model.add(MaxPooling2D(pool_size=(2,2)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
         model.add(Dense(64))
@@ -105,7 +104,7 @@ class prepareData:
             metrics=['accuracy'])
 
         model.fit(
-            self.train_X, self.train_y, 
+            self.train_X, self.train_y,
             batch_size=32, validation_split=0.1,
             epochs=5)
         return model
@@ -117,13 +116,14 @@ class prepareData:
                 try:
                     img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                     resized_array = cv2.resize(
-                        img_array, 
+                        img_array,
                         (self.img_size_x, self.img_size_y))
-                    resized_array = resized_array.reshape(-1, self.img_size_x, self.img_size_y, 1)
+                    resized_array = resized_array.reshape(
+                        -1, self.img_size_x, self.img_size_y, 1)
                     prediction = self.cnn_model.predict(resized_array)
                     plant_prediction = self.categories[int(prediction[0][0])]
                     print(f'PREDICTION OF {img}: {plant_prediction}')
-                    
+
                 except Exception:
                     self.logger.error(f"Broken image {img_path}")
         else:
