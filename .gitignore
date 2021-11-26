@@ -3,3 +3,5 @@
 **/DataReady
 **/test_data
 **/.vscode
+**/_pycache_
+src/tools/__pycache__/tools.cpython-39.pyc
