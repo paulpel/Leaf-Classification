@@ -101,9 +101,8 @@ class prepareData:
         model.add(Dense(64, input_dim=5))
         model.add(Activation("relu"))
 
-        model.add(Dense(1))
-
-        model.add(Activation('softmax')) 
+        model.add(Dense(1)) # jedna wartosc zwracana
+        model.add(Activaton('softmax')) 
 
         model.compile(
             loss=self.loss,
@@ -117,7 +116,7 @@ class prepareData:
 
         return model
 
-    def create_KNN_model(self):
+    def create_CNN2_model(self):
         num_classes = 5
 
         model = Sequential([
@@ -126,7 +125,7 @@ class prepareData:
             layers.MaxPooling2D(),
             layers.Conv2D(32, 3, padding='same', activation='relu'),
             layers.MaxPooling2D(),
-            layers.Conv2D(64, 3, padding='same', activatŌion='relu'),
+            layers.Conv2D(64, 3, padding='same', activation='relu'),
             layers.MaxPooling2D(),
             layers.Flatten(),
             layers.Dense(128, activation='relu'),

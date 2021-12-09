@@ -2,7 +2,7 @@
 **/data
 **/DataReady
 **/test_data
-**/.vscode
-**/_pycache_/
+**/.vscodeś
 **/.DS_Store
-src/tools/__pycache__/
+**/__pycache__/
+**/.vscode
