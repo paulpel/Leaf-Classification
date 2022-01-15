@@ -1,4 +1,6 @@
-from src.tools.tools import prepareData
+from json import load
+from src.tools.tools import GreyscaleModel
+from src.tools.load import LoadModel
 import logging
 from src.tools.colors_terminal import bcolors
 import traceback
@@ -25,8 +27,8 @@ if __name__ == "__main__":
 
     try:
         start_time = time.time()
-        prep_obj = prepareData(logger)
-        prep_obj.main()
+        grey = GreyscaleModel(logger)
+        grey.main()
         end_time = time.time()
         print(
             f"{bcolors.FAIL}Run time:"

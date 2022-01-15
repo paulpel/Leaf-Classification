@@ -8,14 +8,10 @@ import random
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
-from tensorflow.keras.layers import Dense,\
-     Activation, Flatten, Conv2D, MaxPooling2D
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_fscore_support
-from keras import backend as K
 
-
-class prepareData:
+class GreyscaleModel:
 
     def __init__(self, logger) -> None:
         self.logger = logger
@@ -27,9 +23,6 @@ class prepareData:
         self.categories = [
             'Alstonia Scholaris', 'Arjun', 'Basil', 'Chinar', 'Gauva', 'Jamun',
             'Jatropha', 'Lemon', 'Mango', 'Pomegranate', 'Pongamia Pinnata'
-            ]
-        self.categories = [
-            'Alstonia Scholaris', 'Pongamia Pinnata'
             ]
 
         self.img_size_x = 60
@@ -49,9 +42,6 @@ class prepareData:
         self.optimizer = 'adam'
 
     def main(self):
-        self.greyscale_model()
-        
-    def greyscale_model(self):
         self.prepare_data()
         self.shuffle_data()
         self.neural_network_prep()
@@ -61,7 +51,7 @@ class prepareData:
         classes = np.argmax(predictions, axis = 1)
         precision, recall, fbeta, support = precision_recall_fscore_support(self.test_y, classes)
 
-        filename = os.path.join(self.model_dir, 'color_model')
+        filename = os.path.join(self.model_dir, 'greyscale_model')
 
         self.cnn_model.save(filename)
 
@@ -74,7 +64,7 @@ class prepareData:
 
         with open(filename + '.json', 'w') as jf:
             json.dump(data, jf, indent=4)
-
+        
     def prepare_data(self):
         self.logger.info("Preparing data...")
         for category in self.categories:
@@ -86,7 +76,7 @@ class prepareData:
                         continue
                     img_path = os.path.join(data_path, img)
                     try:
-                        img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+                        img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE )
                         resized_array = cv2.resize(
                             img_array,
                             (self.img_size_x, self.img_size_y))
