@@ -1,8 +1,10 @@
 import logging
+from sys import path
 from tensorflow import keras
 import os
 import cv2
 import numpy as np
+import tensorflow as tf
 
 
 class LoadModel:
@@ -21,15 +23,16 @@ class LoadModel:
             'Alstonia Scholaris', 'Arjun', 'Basil', 'Chinar', 'Gauva', 'Jamun',
             'Jatropha', 'Lemon', 'Mango', 'Pomegranate', 'Pongamia Pinnata'
             ]
-        
 
     def main(self):
-        self.model = self.load_model()
+        self.model_g, self.model_c  = self.load_model()
 
     def load_model(self):
-        path = os.path.join(self.cwd, 'src', 'models', 'greyscale_model')
-        model = keras.models.load_model(path)
-        return model
+        path1 = os.path.join(self.cwd, 'src', 'models', 'greyscale_model')
+        path2 = os.path.join(self.cwd, 'src', 'models', 'colormodel')
+        model1 = keras.models.load_model(path1)
+        model2 = keras.models.load_model(path2)
+        return model1, model2
 
     def prepdata(self, img_path):
         data = []
@@ -44,9 +47,16 @@ class LoadModel:
                 logging.error(
                     err)
 
+        image = tf.keras.preprocessing.image.load_img(img_path, target_size=(60,40))
+        input_arr = tf.keras.preprocessing.image.img_to_array(image)
+        input_arr = np.array([input_arr])
         data = np.array(data).reshape(-1, self.img_size_x, self.img_size_y, 1)
+        
+        pred_g = self.model_g.predict(data)
+        pred_c = self.model_c.predict(input_arr)
+        species_g = np.argmax(pred_g, axis = 1)
+        species_c = np.argmax(pred_c, axis = 1)
+        species_g = self.categories[species_g[0]]
+        species_c = self.categories[species_c[0]]
 
-        pred = self.model.predict(data)
-        species = np.argmax(pred, axis = 1)
-        species = self.categories[species[0]]
-        return species
+        return species_g, species_c
