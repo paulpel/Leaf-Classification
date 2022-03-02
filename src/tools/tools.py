@@ -11,6 +11,7 @@ from tensorflow.keras import layers
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_fscore_support
 
+
 class GreyscaleModel:
 
     def __init__(self, logger) -> None:
@@ -48,12 +49,13 @@ class GreyscaleModel:
         self.cnn_model = self.create_CNN2_model()
 
         predictions = self.cnn_model.predict(self.test_X)
-        classes = np.argmax(predictions, axis = 1)
-        precision, recall, fbeta, support = precision_recall_fscore_support(self.test_y, classes)
+        classes = np.argmax(predictions, axis=1)
+        precision, recall, fbeta, support = precision_recall_fscore_support(
+            self.test_y, classes)
 
         filename = os.path.join(self.model_dir, 'greyscale_model')
 
-        self.cnn_model.save(filename)
+        # self.cnn_model.save(filename)
 
         data = {
             'precision': precision.tolist(),
@@ -64,7 +66,7 @@ class GreyscaleModel:
 
         with open(filename + '.json', 'w') as jf:
             json.dump(data, jf, indent=4)
-        
+
     def prepare_data(self):
         self.logger.info("Preparing data...")
         for category in self.categories:
@@ -76,7 +78,7 @@ class GreyscaleModel:
                         continue
                     img_path = os.path.join(data_path, img)
                     try:
-                        img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE )
+                        img_array = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                         resized_array = cv2.resize(
                             img_array,
                             (self.img_size_x, self.img_size_y))
@@ -86,7 +88,6 @@ class GreyscaleModel:
                             f"Broken or none image file: {img_path}")
             else:
                 self.logger.warning(f"Incorrect path to data. path:{data_path}")
-                
 
         if self.show_example:
             plt.imshow(resized_array, cmap="gray")
@@ -99,9 +100,8 @@ class GreyscaleModel:
 
     def neural_network_prep(self):
         self.logger.info("Creating features and labels...")
-        train, test =  train_test_split(self.training_data, test_size=0.2, random_state=25)
+        train, test = train_test_split(self.training_data, test_size=0.2, random_state=25)
 
-        
         for features, label in train:
             self.train_X.append(features)
             self.train_y.append(label)
@@ -132,12 +132,13 @@ class GreyscaleModel:
             layers.Flatten(),
             layers.Dense(128, activation='relu'),
             layers.Dense(num_classes)
-        ])  
+        ])
 
-        model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['acc'])
-        
+        model.compile(
+            optimizer='adam',
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            metrics=['acc'])
+
         self.history = model.fit(
             self.train_X, self.train_y,
             batch_size=32, validation_split=0.1,
@@ -162,6 +163,6 @@ class GreyscaleModel:
 
                 except Exception as err:
                     self.logger.error(err)
-                    
+
         else:
             self.logger.warning("Incorrect path to data")

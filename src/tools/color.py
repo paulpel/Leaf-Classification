@@ -1,13 +1,8 @@
-from cProfile import label
-import matplotlib.pyplot as plt
 import numpy as np
 import os
-import PIL
 import tensorflow as tf
-import os
 import json
 
-from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 from sklearn.metrics import precision_recall_fscore_support
@@ -70,14 +65,14 @@ model.compile(optimizer='adam',
 
 model.summary()
 
-epochs=30
+epochs = 30
 history = model.fit(
   train_ds,
   validation_data=val_ds,
   epochs=epochs
 )
 predictions = model.predict(val_ds)
-classes = np.argmax(predictions, axis = 1)
+classes = np.argmax(predictions, axis=1)
 print(len(classes))
 path = os.path.join(os.getcwd(), 'colormodel')
 
@@ -86,18 +81,16 @@ testData = tf.keras.preprocessing.image_dataset_from_directory(
     labels='inferred',
     label_mode='categorical',
     seed=324893,
-    image_size=(img_height,img_width),
+    image_size=(img_height, img_width),
     batch_size=batch_size)
 
 
 predictions = model.predict(testData)
-classes = np.argmax(predictions, axis = 1)
-labels =  np.array([])
+classes = np.argmax(predictions, axis=1)
+labels = np.array([])
+
 for x, y in testData:
-  labels = np.concatenate([labels, np.argmax(y.numpy(), axis=-1)])
-print(predictions)
-print(labels.astype(int))
-# model.save(path)
+    labels = np.concatenate([labels, np.argmax(y.numpy(), axis=-1)])
 
 precision, recall, fbeta, support = precision_recall_fscore_support(testData, classes)
 
